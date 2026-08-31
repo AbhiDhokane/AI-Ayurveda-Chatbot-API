@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${herb.name} + ' – AyurvedaCare'">Herb Detail</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <span class="logo-icon">🌿</span>
+                <span class="logo-text">AyurvedaCare</span>
+            </div>
+            <nav class="nav">
+                <a href="/">Home</a>
+                <a href="/herbs" class="active">Herbs Encyclopedia</a>
+                <a href="/chat">AI Chatbot</a>
+                <a href="/about">About</a>
+            </nav>
+        </div>
+    </header>
+
+    <section class="herb-detail">
+        <div class="container">
+            <a href="/herbs" class="back-link">← Back to all herbs</a>
+            
+            <div class="detail-header">
+                <h1 th:text="${herb.name}">Name</h1>
+                <p class="sanskrit-name" th:text="${herb.sanskritName}">Sanskrit</p>
+                <p class="botanical-name" th:text="${herb.botanicalName}">Botanical</p>
+                <span class="category-badge" th:text="${herb.category}">Category</span>
+            </div>
+
+            <div class="detail-grid">
+                <div class="detail-card">
+                    <h3>Basic Information</h3>
+                    <table class="info-table">
+                        <tr><th>Family</th><td th:text="${herb.family}"></td></tr>
+                        <tr><th>English Name</th><td th:text="${herb.englishName}"></td></tr>
+                        <tr><th>Parts Used</th><td th:text="${#strings.listJoin(herb.partsUsed, ', ')}"></td></tr>
+                        <tr><th>Common Names</th><td th:text="${#strings.listJoin(herb.commonNames, ', ')}"></td></tr>
+                    </table>
+                </div>
+
+                <div class="detail-card">
+                    <h3>Ayurvedic Properties (Dravyaguna)</h3>
+                    <table class="info-table">
+                        <tr><th>Rasa (Taste)</th><td th:text="${herb.rasa}"></td></tr>
+                        <tr><th>Guna (Qualities)</th><td th:text="${herb.guna}"></td></tr>
+                        <tr><th>Virya (Potency)</th><td th:text="${herb.virya}"></td></tr>
+                        <tr><th>Vipaka (Post-digestive)</th><td th:text="${herb.vipaka}"></td></tr>
+                        <tr><th>Dosha Effect</th><td th:text="${herb.doshaEffect}"></td></tr>
+                        <tr><th>Prabhava</th><td th:text="${herb.prabhava}"></td></tr>
+                    </table>
+                </div>
+            </div>
+
+            <div class="detail-section">
+                <h3>Description</h3>
+                <p th:text="${herb.description}"></p>
+            </div>
+
+            <div class="detail-section">
+                <h3>Key Benefits</h3>
+                <ul>
+                    <li th:each="b : ${herb.benefits}" th:text="${b}"></li>
+                </ul>
+            </div>
+
+            <div class="detail-section">
+                <h3>Traditional Uses</h3>
+                <ul>
+                    <li th:each="u : ${herb.traditionalUses}" th:text="${u}"></li>
+                </ul>
+            </div>
+
+            <div class="detail-section">
+                <h3>Modern Applications</h3>
+                <ul>
+                    <li th:each="m : ${herb.modernApplications}" th:text="${m}"></li>
+                </ul>
+            </div>
+
+            <div class="detail-grid">
+                <div class="detail-card">
+                    <h3>Dosage</h3>
+                    <p th:text="${herb.dosage}"></p>
+                </div>
+                <div class="detail-card">
+                    <h3>How to Use</h3>
+                    <p th:text="${herb.howToUse}"></p>
+                </div>
+            </div>
+
+            <div class="detail-section">
+                <h3>Classical Formulations</h3>
+                <div class="tags">
+                    <span class="tag" th:each="f : ${herb.formulations}" th:text="${f}"></span>
+                </div>
+            </div>
+
+            <div class="detail-section precaution">
+                <h3>⚠ Precautions</h3>
+                <p th:text="${herb.precautions}"></p>
+            </div>
+
+            <div class="disclaimer">
+                <strong>Disclaimer:</strong> This information is based on classical Ayurvedic texts and traditional knowledge for educational purposes only. It is not medical advice. Always consult a qualified Ayurvedic physician or healthcare professional before using any herb, especially if pregnant, nursing, or taking medications.
+            </div>
+
+            <div class="cta-box">
+                <p>Have questions about this herb or your constitution?</p>
+                <a href="/chat" class="btn btn-primary">Ask AyurvedaCare AI</a>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <p>© 2026 AyurvedaCare</p>
+        </div>
+    </footer>
+</body>
+</html>

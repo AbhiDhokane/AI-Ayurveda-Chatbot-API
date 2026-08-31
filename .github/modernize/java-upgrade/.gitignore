@@ -1,0 +1,10 @@
+.env
+target/
+*.log
+
+# Local database
+data/*.mv.db
+data/*.trace.db
+
+# Windows
+desktop.ini

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Herbs Encyclopedia – AyurvedaCare</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <span class="logo-icon">🌿</span>
+                <span class="logo-text">AyurvedaCare</span>
+            </div>
+            <nav class="nav">
+                <a href="/">Home</a>
+                <a href="/herbs" class="active">Herbs Encyclopedia</a>
+                <a href="/chat">AI Chatbot</a>
+                <a href="/about">About</a>
+            </nav>
+        </div>
+    </header>
+
+    <section class="page-header">
+        <div class="container">
+            <h1>Ayurvedic Herbs Encyclopedia</h1>
+            <p>Explore classical herbs with their Rasa, Virya, Vipaka, benefits, uses and applications in daily life.</p>
+        </div>
+    </section>
+
+    <section class="search-section">
+        <div class="container">
+            <form action="/herbs" method="get" class="search-form">
+                <input type="text" name="q" placeholder="Search herbs by name, benefit, category..." th:value="${searchQuery}">
+                <button type="submit" class="btn btn-primary">Search</button>
+            </form>
+            <div class="category-filters">
+                <a href="/herbs" class="filter-chip" th:classappend="${selectedCategory == null} ? 'active' : ''">All</a>
+                <a th:each="cat : ${categories}" 
+                   th:href="@{/herbs(category=${cat})}" 
+                   th:text="${cat}"
+                   class="filter-chip"
+                   th:classappend="${selectedCategory == cat} ? 'active' : ''"></a>
+            </div>
+        </div>
+    </section>
+
+    <section class="herbs-list">
+        <div class="container">
+            <p class="result-count" th:text="'Showing ' + ${#lists.size(herbs)} + ' herbs'"></p>
+            <div class="herb-grid">
+                <div class="herb-card" th:each="herb : ${herbs}">
+                    <h3 th:text="${herb.name}">Name</h3>
+                    <p class="sanskrit" th:text="${herb.sanskritName}">Sanskrit</p>
+                    <p class="botanical" th:text="${herb.botanicalName}">Botanical</p>
+                    <p class="category" th:text="${herb.category}">Category</p>
+                    <p class="dosha" th:text="${herb.doshaEffect}">Dosha</p>
+                    <p class="desc" th:text="${#strings.abbreviate(herb.description, 140)}">Desc</p>
+                    <a th:href="@{/herb/{id}(id=${herb.id})}" class="btn btn-small">View Full Details</a>
+                </div>
+            </div>
+            <div th:if="${#lists.isEmpty(herbs)}" class="no-results">
+                <p>No herbs found matching your search. Try a different term.</p>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <p>© 2026 AyurvedaCare – Traditional knowledge for modern wellness</p>
+        </div>
+    </footer>
+</body>
+</html>

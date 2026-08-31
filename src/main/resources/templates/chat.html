@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Chatbot – AyurvedaCare</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <span class="logo-icon">🌿</span>
+                <span class="logo-text">AyurvedaCare</span>
+            </div>
+            <nav class="nav">
+                <a href="/">Home</a>
+                <a href="/herbs">Herbs Encyclopedia</a>
+                <a href="/chat" class="active">AI Chatbot</a>
+                <a href="/about">About</a>
+                <a href="/login">Login</a>
+                <a href="/signup" class="btn btn-small nav-signup">Sign Up</a>
+            </nav>
+        </div>
+    </header>
+
+    <section class="chat-page">
+        <div class="container chat-container">
+            <div class="chat-header">
+                <h1>🌿 AyurvedaCare AI Assistant</h1>
+                <p>Ask about Ayurveda, herbs, natural wellness, Doshas, diet & lifestyle. Your AI response can be emailed to your registered address or another address you choose.</p>
+                <div class="signed-in">Signed in as <strong th:text="${userName}">User</strong> · <span th:text="${userEmail}">email@example.com</span> <form method="post" action="/logout" style="display:inline"><button class="link-button" type="submit">Logout</button></form></div>
+            </div>
+
+            <div class="language-selector">
+                <label for="language">Preferred Language:</label>
+                <select id="language">
+                    <option value="English">English</option>
+                    <option value="Hindi">Hindi (हिन्दी)</option>
+                    <option value="Sanskrit terms with English">Sanskrit + English</option>
+                    <option value="Tamil">Tamil</option>
+                    <option value="Telugu">Telugu</option>
+                    <option value="Marathi">Marathi</option>
+                    <option value="Bengali">Bengali</option>
+                    <option value="Gujarati">Gujarati</option>
+                    <option value="Kannada">Kannada</option>
+                    <option value="Malayalam">Malayalam</option>
+                </select>
+            </div>
+
+            <div id="chat-messages" class="chat-messages">
+                <div class="message bot">
+                    <div class="message-content">
+                        Namaste! 🙏 I am AyurvedaCare, your Ayurvedic wellness companion.<br><br>
+                        I can help you with:<br>
+                        • Information about Ayurvedic herbs & medicines<br>
+                        • Natural remedies and lifestyle tips<br>
+                        • Understanding your Dosha (constitution)<br>
+                        • Daily routines (Dinacharya) for natural fitness<br>
+                        • Preferring herbal approaches whenever possible<br><br>
+                        <strong>Which language would you prefer me to answer in?</strong> (Select above or just start chatting)
+                    </div>
+                </div>
+            </div>
+
+            <div class="chat-input-area">
+                <textarea id="user-input" placeholder="Ask about a herb, symptom, diet tip, or anything related to natural health..." rows="2"></textarea>
+                <button id="send-btn" class="btn btn-primary">Send</button>
+            </div>
+
+            <div class="email-panel" id="email-panel" hidden></div>
+
+            <div class="chat-disclaimer">
+                <small>Educational purposes only. Not a substitute for professional medical advice. Always consult a qualified practitioner.</small>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <p>Powered by Ollama + Qwen • Built with Java Spring Boot</p>
+        </div>
+    </footer>
+
+    <script th:inline="javascript">window.currentUserEmail = /*[[${userEmail}]]*/ "";</script>
+    <script th:src="@{/js/chat.js}"></script>
+</body>
+</html>
