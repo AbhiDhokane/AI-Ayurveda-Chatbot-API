@@ -83,7 +83,8 @@ public class ChatApiController {
     public SseEmitter streamChat(
             @RequestParam(defaultValue = "English") String language,
             @RequestParam String message,
-            HttpSession session
+            HttpSession session,
+            jakarta.servlet.http.HttpServletResponse response
     ) {
 
         if (session.getAttribute(AuthController.USER_ID) == null) {
@@ -95,12 +96,22 @@ public class ChatApiController {
             return unauthorized;
         }
 
+        // Disable proxy buffering for Render/Nginx/Cloudflare
+        response.setHeader("Cache-Control", "no-cache, no-transform");
+        response.setHeader("X-Accel-Buffering", "no");
+        response.setHeader("Connection", "keep-alive");
+
         // Five-minute timeout
         SseEmitter emitter = new SseEmitter(300000L);
 
         emitter.onTimeout(emitter::complete);
         emitter.onCompletion(() -> System.out.println("SSE completed."));
         emitter.onError(error -> System.out.println("SSE error: " + error.getMessage()));
+
+        // Send instant event to flush HTTP headers past reverse proxies
+        try {
+            emitter.send(SseEmitter.event().comment("connected"));
+        } catch (IOException ignored) {}
 
         Thread thread = new Thread(() -> {
             try {
