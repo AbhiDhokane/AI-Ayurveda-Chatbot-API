@@ -14,8 +14,12 @@ public class EmailService {
 
     public void sendTreatment(String recipient, String question, String answer, String language) {
         SimpleMailMessage mail = new SimpleMailMessage();
-        mail.setTo(recipient);
-        if (sender != null && !sender.isBlank()) mail.setFrom(sender);
+        if (recipient != null) {
+            mail.setTo(recipient.trim().replaceAll("\\s+", ""));
+        }
+        if (sender != null && !sender.isBlank()) {
+            mail.setFrom(sender.trim().replaceAll("\\s+", ""));
+        }
         mail.setSubject("AyurvedaCare AI – Your Wellness Information");
         mail.setText("Namaste!\n\nYour AyurvedaCare AI request\n\nQuestion:\n" + question
                 + "\n\nAI-generated information:\n" + answer
