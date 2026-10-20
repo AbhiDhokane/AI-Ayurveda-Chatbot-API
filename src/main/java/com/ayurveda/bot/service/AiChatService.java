@@ -11,6 +11,8 @@ import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
@@ -26,7 +28,7 @@ public class AiChatService {
     @Value("${gemini.api.key:}")
     private String geminiApiKey;
 
-    @Value("${gemini.model:gemini-flash-latest}")
+    @Value("${gemini.model:gemini-flash-lite-latest}")
     private String geminiModel;
 
     @Value("${grok.api.key:}")
@@ -40,6 +42,44 @@ public class AiChatService {
 
     private final RestTemplate restTemplate = new RestTemplate();
     private final ObjectMapper objectMapper = new ObjectMapper();
+
+    @jakarta.annotation.PostConstruct
+    public void init() {
+        if ((geminiApiKey == null || geminiApiKey.isBlank()) || (grokApiKey == null || grokApiKey.isBlank())) {
+            loadFromDotEnv();
+        }
+    }
+
+    private void loadFromDotEnv() {
+        java.io.File envFile = new java.io.File(".env");
+        if (!envFile.exists()) {
+            return;
+        }
+        try (BufferedReader reader = new BufferedReader(new FileReader(envFile))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                line = line.trim();
+                if (line.isEmpty() || line.startsWith("#")) {
+                    continue;
+                }
+                int eqIdx = line.indexOf('=');
+                if (eqIdx > 0) {
+                    String key = line.substring(0, eqIdx).trim();
+                    String value = line.substring(eqIdx + 1).trim();
+                    if ("GEMINI_API_KEY".equalsIgnoreCase(key) && (geminiApiKey == null || geminiApiKey.isBlank())) {
+                        geminiApiKey = value;
+                    } else if ("GROK_API_KEY".equalsIgnoreCase(key) && (grokApiKey == null || grokApiKey.isBlank())) {
+                        grokApiKey = value;
+                    } else if ("AI_PROVIDER".equalsIgnoreCase(key) && (aiProvider == null || aiProvider.isBlank())) {
+                        aiProvider = value;
+                    } else if ("GEMINI_MODEL".equalsIgnoreCase(key) && (geminiModel == null || geminiModel.isBlank())) {
+                        geminiModel = value;
+                    }
+                }
+            }
+        } catch (Exception ignored) {
+        }
+    }
 
     // ============================================================
     // MAIN CHAT METHOD
@@ -82,7 +122,7 @@ public class AiChatService {
             return;
         }
 
-        String model = (geminiModel != null && !geminiModel.isBlank()) ? geminiModel : "gemini-flash-latest";
+        String model = (geminiModel != null && !geminiModel.isBlank()) ? geminiModel : "gemini-flash-lite-latest";
         String url = "https://generativelanguage.googleapis.com/v1beta/models/" + model + ":streamGenerateContent?alt=sse&key=" + geminiApiKey;
 
         Map<String, Object> systemInstruction = Map.of(
@@ -96,7 +136,7 @@ public class AiChatService {
 
         Map<String, Object> generationConfig = Map.of(
                 "temperature", 0.2,
-                "maxOutputTokens", 1200
+                "maxOutputTokens", 700
         );
 
         Map<String, Object> request = Map.of(

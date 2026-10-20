@@ -17,6 +17,8 @@ import jakarta.servlet.http.HttpSession;
 @CrossOrigin
 public class ChatApiController {
 
+    private static final com.fasterxml.jackson.databind.ObjectMapper OBJECT_MAPPER = new com.fasterxml.jackson.databind.ObjectMapper();
+
     private final AiChatService aiChatService;
 
     public ChatApiController(AiChatService aiChatService) {
@@ -107,8 +109,7 @@ public class ChatApiController {
                         message,
                         chunk -> {
                             try {
-                                String jsonChunk = new com.fasterxml.jackson.databind.ObjectMapper()
-                                        .writeValueAsString(chunk);
+                                String jsonChunk = OBJECT_MAPPER.writeValueAsString(chunk);
 
                                 emitter.send(
                                         SseEmitter.event().data(jsonChunk)
