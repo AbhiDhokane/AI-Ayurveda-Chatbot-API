@@ -27,7 +27,9 @@ public class EmailController {
             emailService.sendTreatment(email, request.getQuestion(), request.getAnswer(), request.getLanguage());
             return ResponseEntity.ok(Map.of("success", true, "message", "Treatment information sent successfully."));
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body(Map.of("success", false, "message", "Email could not be sent. Check your SMTP settings."));
+            e.printStackTrace();
+            String detail = (e.getMessage() != null) ? e.getMessage() : "Check SMTP credentials and App Password.";
+            return ResponseEntity.internalServerError().body(Map.of("success", false, "message", "Email could not be sent: " + detail));
         }
     }
 }
