@@ -7,6 +7,7 @@ import org.springframework.http.MediaType;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
@@ -41,15 +42,16 @@ public class EmailService {
                 + "\n\nLanguage: " + language
                 + "\n\nIMPORTANT: This email is for educational information only. It is not a diagnosis or a substitute for professional medical advice. Do not stop prescribed medicines based on this information. Consult a qualified healthcare professional or Ayurvedic practitioner for personal treatment decisions.\n\n— AyurvedaCare";
 
-        // 1. Resend HTTPS API (Port 443 - Bypasses Render port 587 restrictions)
-        if (resendApiKey != null && !resendApiKey.isBlank()) {
-            sendViaResend(cleanRecipient, subject, body);
+        // 1. Brevo HTTPS API (Port 443 - Can send to ANY recipient worldwide without custom domain)
+        if (brevoApiKey != null && !brevoApiKey.isBlank()) {
+            String brevoSender = (sender != null && !sender.isBlank() && !sender.contains("resend.dev")) ? cleanSender : "abhishekdhokane1331@gmail.com";
+            sendViaBrevo(brevoSender, cleanRecipient, subject, body);
             return;
         }
 
-        // 2. Brevo HTTPS API (Port 443 - Bypasses Render port 587 restrictions)
-        if (brevoApiKey != null && !brevoApiKey.isBlank()) {
-            sendViaBrevo(cleanSender, cleanRecipient, subject, body);
+        // 2. Resend HTTPS API (Port 443 - Bypasses Render port 587 restrictions)
+        if (resendApiKey != null && !resendApiKey.isBlank()) {
+            sendViaResend(cleanRecipient, subject, body);
             return;
         }
 
@@ -66,9 +68,29 @@ public class EmailService {
         } catch (Exception e) {
             String msg = (e.getMessage() != null) ? e.getMessage() : "";
             if (msg.contains("timed out") || msg.contains("SocketTimeoutException")) {
-                throw new RuntimeException("Render Free Tier blocks outbound SMTP port 587. To send emails on Render, add RESEND_API_KEY (from resend.com), or host on Railway.app where port 587 is open.");
+                throw new RuntimeException("Render Free Tier blocks outbound SMTP port 587. To send emails on Render, add BREVO_API_KEY (from brevo.com) or RESEND_API_KEY.");
             }
             throw e;
+        }
+    }
+
+    private void sendViaBrevo(String senderEmail, String recipient, String subject, String body) {
+        String url = "https://api.brevo.com/v3/smtp/email";
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("api-key", brevoApiKey.trim());
+
+        Map<String, Object> payload = Map.of(
+                "sender", Map.of("name", "AyurvedaCare AI", "email", senderEmail),
+                "to", List.of(Map.of("email", recipient)),
+                "subject", subject,
+                "textContent", body
+        );
+
+        try {
+            restTemplate.postForEntity(url, new HttpEntity<>(payload, headers), String.class);
+        } catch (HttpStatusCodeException e) {
+            throw new RuntimeException("Brevo API Error (" + e.getStatusCode() + "): " + e.getResponseBodyAsString());
         }
     }
 
@@ -85,22 +107,10 @@ public class EmailService {
                 "text", body
         );
 
-        restTemplate.postForEntity(url, new HttpEntity<>(payload, headers), String.class);
-    }
-
-    private void sendViaBrevo(String senderEmail, String recipient, String subject, String body) {
-        String url = "https://api.brevo.com/v3/smtp/email";
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.set("api-key", brevoApiKey.trim());
-
-        Map<String, Object> payload = Map.of(
-                "sender", Map.of("name", "AyurvedaCare", "email", senderEmail),
-                "to", List.of(Map.of("email", recipient)),
-                "subject", subject,
-                "textContent", body
-        );
-
-        restTemplate.postForEntity(url, new HttpEntity<>(payload, headers), String.class);
+        try {
+            restTemplate.postForEntity(url, new HttpEntity<>(payload, headers), String.class);
+        } catch (HttpStatusCodeException e) {
+            throw new RuntimeException("Resend API Error (" + e.getStatusCode() + "): " + e.getResponseBodyAsString());
+        }
     }
 }
