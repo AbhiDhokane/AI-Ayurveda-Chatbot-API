@@ -9,3 +9,5 @@ target/
 .env
 *.class
 .DS_Store
+*.db
+data/*.db

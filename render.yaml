@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: ayurvedacare-ai
+    env: docker
+    plan: free
+    region: oregon
+    dockerfilePath: ./Dockerfile
+    autoDeploy: true
+    envVars:
+      - key: PORT
+        value: 8081
+      - key: AI_PROVIDER
+        value: gemini
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GEMINI_MODEL
+        value: gemini-flash-latest
+      - key: GROK_API_KEY
+        sync: false
+      - key: GROK_MODEL
+        value: grok-2-latest

@@ -442,7 +442,7 @@ document.addEventListener(
 
 
                 /*
-                 * Wait until Qwen
+                 * Wait until AI
                  * finishes.
                  */
                 const finalAnswer = await streamPromise;
@@ -474,9 +474,9 @@ document.addEventListener(
                 bot.textContent =
                     "Unable to connect to AyurvedaCare.\n\n"
                     + "Please make sure:\n"
-                    + "1. Ollama is running\n"
-                    + "2. Qwen model is installed\n"
-                    + "3. Spring Boot server is running";
+                    + "1. Spring Boot server is running\n"
+                    + "2. Your AI API key (Gemini / Grok) is configured\n"
+                    + "3. You have an active internet connection";
 
 
             } finally {

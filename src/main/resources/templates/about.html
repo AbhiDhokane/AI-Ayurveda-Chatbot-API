@@ -28,7 +28,7 @@
             <h1>About AyurvedaCare</h1>
             
             <div class="about-content">
-                <p>AyurvedaCare is an educational platform that brings classical Ayurvedic wisdom into the modern world using AI. It combines a carefully curated encyclopedia of natural herbs and medicines with an intelligent chatbot powered by Ollama + Qwen (from local AI).</p>
+                <p>AyurvedaCare is an educational platform that brings classical Ayurvedic wisdom into the modern world using AI. It combines a carefully curated encyclopedia of natural herbs and medicines with an intelligent chatbot powered by Google Gemini and Grok AI.</p>
 
                 <h2>Our Philosophy</h2>
                 <ul>
@@ -47,7 +47,7 @@
                 </ul>
 
                 <h2>Technology</h2>
-                <p>Built with <strong>Java + Spring Boot</strong> (backend & templating), HTML/CSS/JS frontend, and the <strong>Ollama + Qwen API</strong> from local AI for intelligent conversations. Herb data is stored in structured JSON for easy extension.</p>
+                <p>Built with <strong>Java + Spring Boot</strong> (backend & templating), HTML/CSS/JS frontend, and cloud-hosted <strong>AI APIs (Google Gemini & xAI Grok)</strong> for intelligent, real-time conversations. Herb data is stored in structured JSON for easy extension.</p>
 
                 <h2>Disclaimer</h2>
                 <div class="disclaimer">
@@ -55,7 +55,7 @@
                 </div>
 
                 <h2>How to Extend</h2>
-                <p>You can add more herbs by editing <code>src/main/resources/herbs.json</code>. The chatbot system prompt can be customized in <code>Ollama + QwenChatService.java</code>.</p>
+                <p>You can add more herbs by editing <code>src/main/resources/herbs.json</code>. The chatbot system prompt and safety rules can be customized in <code>AiChatService.java</code>.</p>
             </div>
         </div>
     </section>
