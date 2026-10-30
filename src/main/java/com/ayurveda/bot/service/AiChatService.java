@@ -136,7 +136,7 @@ public class AiChatService {
 
         Map<String, Object> generationConfig = Map.of(
                 "temperature", 0.2,
-                "maxOutputTokens", 700
+                "maxOutputTokens", 1200
         );
 
         Map<String, Object> request = Map.of(
@@ -537,9 +537,27 @@ public class AiChatService {
                 4. When to See a Doctor
                    - Brief note on warning signs that need professional medical attention.
 
+                5. Classical Ayurvedic Proof & References (शास्त्रीय संदर्भ व प्रमाण)
+                   - Provide the exact classical textual proof (Pramāna) for the remedies or herbs mentioned.
+                   - Cite the Grantha/Book (e.g. Charaka Samhita, Sushruta Samhita, Ashtanga Hridaya, Bhavaprakasha Nighantu, Sharangadhara Samhita).
+                   - Cite the Sthana, Chapter (Adhyaya), and Verse / Shloka number.
+                   - Include the authentic Sanskrit Shloka line or verse snippet.
+
                 Use these exact section headers (translated into the response language), keep each bullet short, and do not pad with repeated information.
 
-                For general questions that are NOT about a specific symptom (e.g. "what is Ayurveda", "benefits of yoga"), you do not need to use this structure — answer normally and directly.
+                For general questions that are NOT about a specific symptom (e.g. "what is Ashwagandha", "benefits of Tulsi", "what is Ayurveda"), answer clearly and directly, and ALWAYS conclude with the Classical Reference and Shloka/Verse proof at the end.
+
+                ============================================================
+                CLASSICAL TEXTUAL PROOF / SCRIPTURAL CITATION (MANDATORY AT THE END)
+                ============================================================
+                AT THE VERY END OF YOUR RESPONSE (for both symptom questions and general Ayurvedic questions discussing remedies, herbs, or principles), YOU MUST ALWAYS PROVIDE SCRIPTURAL PROOF (Pramāna / ग्रन्थ संदर्भ):
+                - State the authentic classical text (Grantha / Book): e.g. Charaka Samhita (चरक संहिता), Sushruta Samhita (सुश्रुत संहिता), Ashtanga Hridaya (अष्टाङ्ग हृदयम्), Bhavaprakasha Nighantu (भावप्रकाश निघण्टु), Sharangadhara Samhita (शारङ्गधर संहिता), etc.
+                - State the specific Sthana, Adhyaya (Chapter), and Shloka / Verse number where the remedy or herb is attested (e.g., Charaka Samhita, Chikitsa Sthana, Adhyaya 3, Shloka 145 or Bhavaprakasha Nighantu, Haritakyadi Varga, Shloka 62-64).
+                - Include the key Sanskrit Shloka (verse) or quotation validating the remedy, with its meaning in the response language.
+                - Format this concluding section clearly at the end:
+                  * In English: "📜 Classical Reference & Verse Proof (शास्त्रीय प्रमाण)"
+                  * In Hindi: "📜 शास्त्रीय प्रमाण एवं संदर्भ ग्रन्थ (Classical Reference)"
+                  * In Marathi: "📜 शास्त्रीय प्रमाण आणि संदर्भ ग्रंथ (Classical Reference)"
 
                 ============================================================
                 RESPONSE RULES

@@ -19,6 +19,16 @@
                 <a href="/herbs">Herbs Encyclopedia</a>
                 <a href="/chat">AI Chatbot</a>
                 <a href="/about" class="active">About</a>
+                <th:block th:if="${session.userId != null}">
+                    <span class="nav-user-badge">👤 <span th:text="${session.userName}">User</span></span>
+                    <form th:action="@{/logout}" method="post" class="nav-logout-form">
+                        <button type="submit" class="btn btn-small nav-logout">Logout</button>
+                    </form>
+                </th:block>
+                <th:block th:unless="${session.userId != null}">
+                    <a href="/login">Login</a>
+                    <a href="/signup" class="btn btn-small nav-signup">Sign Up</a>
+                </th:block>
             </nav>
         </div>
     </header>

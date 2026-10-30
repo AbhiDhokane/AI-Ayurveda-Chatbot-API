@@ -3,6 +3,7 @@ package com.ayurveda.bot.controller;
 import com.ayurveda.bot.model.ChatRequest;
 import com.ayurveda.bot.model.ChatResponse;
 import com.ayurveda.bot.service.AiChatService;
+import com.ayurveda.bot.service.ChatHistoryService;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
+import java.util.Map;
 import jakarta.servlet.http.HttpSession;
 
 @RestController
@@ -20,9 +22,34 @@ public class ChatApiController {
     private static final com.fasterxml.jackson.databind.ObjectMapper OBJECT_MAPPER = new com.fasterxml.jackson.databind.ObjectMapper();
 
     private final AiChatService aiChatService;
+    private final ChatHistoryService chatHistoryService;
 
-    public ChatApiController(AiChatService aiChatService) {
+    public ChatApiController(AiChatService aiChatService, ChatHistoryService chatHistoryService) {
         this.aiChatService = aiChatService;
+        this.chatHistoryService = chatHistoryService;
+    }
+
+    // ============================================================
+    // CHAT HISTORY ENDPOINTS
+    // ============================================================
+
+    @GetMapping("/history")
+    public ResponseEntity<?> getChatHistory(HttpSession session) {
+        Long userId = (Long) session.getAttribute(AuthController.USER_ID);
+        if (userId == null) {
+            return ResponseEntity.status(401).body(ChatResponse.error("Please log in first."));
+        }
+        return ResponseEntity.ok(chatHistoryService.getHistory(userId));
+    }
+
+    @DeleteMapping("/history")
+    public ResponseEntity<?> clearChatHistory(HttpSession session) {
+        Long userId = (Long) session.getAttribute(AuthController.USER_ID);
+        if (userId == null) {
+            return ResponseEntity.status(401).body(ChatResponse.error("Please log in first."));
+        }
+        chatHistoryService.clearHistory(userId);
+        return ResponseEntity.ok(Map.of("success", true, "message", "Chat history cleared successfully."));
     }
 
     // ============================================================
@@ -33,7 +60,8 @@ public class ChatApiController {
     public ResponseEntity<ChatResponse> chat(
             @RequestBody ChatRequest request, HttpSession session) {
 
-        if (session.getAttribute(AuthController.USER_ID) == null) {
+        Long userId = (Long) session.getAttribute(AuthController.USER_ID);
+        if (userId == null) {
             return ResponseEntity.status(401).body(ChatResponse.error("Please log in first."));
         }
 
@@ -49,6 +77,9 @@ public class ChatApiController {
         }
 
         try {
+            // Save user message to database
+            chatHistoryService.saveMessage(userId, "user", request.getMessage(), language);
+
             StringBuilder answer = new StringBuilder();
             aiChatService.streamChat(
                     language,
@@ -56,9 +87,13 @@ public class ChatApiController {
                     answer::append
             );
 
+            String finalAnswer = answer.toString();
+            // Save bot response to database
+            chatHistoryService.saveMessage(userId, "bot", finalAnswer, language);
+
             return ResponseEntity.ok(
                     new ChatResponse(
-                            answer.toString(),
+                            finalAnswer,
                             language,
                             true
                     )
@@ -87,7 +122,8 @@ public class ChatApiController {
             jakarta.servlet.http.HttpServletResponse response
     ) {
 
-        if (session.getAttribute(AuthController.USER_ID) == null) {
+        Long userId = (Long) session.getAttribute(AuthController.USER_ID);
+        if (userId == null) {
             SseEmitter unauthorized = new SseEmitter(1000L);
             try {
                 unauthorized.send(SseEmitter.event().name("error").data("\"Please log in first.\""));
@@ -95,6 +131,9 @@ public class ChatApiController {
             unauthorized.complete();
             return unauthorized;
         }
+
+        // Save user message to database
+        chatHistoryService.saveMessage(userId, "user", message, language);
 
         // Disable proxy buffering for Render/Nginx/Cloudflare
         response.setHeader("Cache-Control", "no-cache, no-transform");
@@ -114,12 +153,14 @@ public class ChatApiController {
         } catch (IOException ignored) {}
 
         Thread thread = new Thread(() -> {
+            StringBuilder fullBotResponse = new StringBuilder();
             try {
                 aiChatService.streamChat(
                         language,
                         message,
                         chunk -> {
                             try {
+                                fullBotResponse.append(chunk);
                                 String jsonChunk = OBJECT_MAPPER.writeValueAsString(chunk);
 
                                 emitter.send(
@@ -130,6 +171,11 @@ public class ChatApiController {
                             }
                         }
                 );
+
+                // Save bot response to database upon completion
+                if (fullBotResponse.length() > 0) {
+                    chatHistoryService.saveMessage(userId, "bot", fullBotResponse.toString(), language);
+                }
 
                 // Tell frontend that generation finished
                 emitter.send(

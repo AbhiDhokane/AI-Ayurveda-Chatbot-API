@@ -17,7 +17,12 @@ public class AuthController {
     public AuthController(AuthService authService) { this.authService = authService; }
 
     @GetMapping("/login")
-    public String loginPage() { return "login"; }
+    public String loginPage(HttpSession session) {
+        if (session.getAttribute(USER_ID) != null) {
+            return "redirect:/chat";
+        }
+        return "login";
+    }
 
     @PostMapping("/login")
     public String login(@RequestParam String email, @RequestParam String password, HttpSession session, Model model) {
@@ -34,7 +39,12 @@ public class AuthController {
     }
 
     @GetMapping("/signup")
-    public String signupPage() { return "signup"; }
+    public String signupPage(HttpSession session) {
+        if (session.getAttribute(USER_ID) != null) {
+            return "redirect:/chat";
+        }
+        return "signup";
+    }
 
     @PostMapping("/signup")
     public String signup(@RequestParam String name, @RequestParam String email, @RequestParam String password,
@@ -53,6 +63,12 @@ public class AuthController {
 
     @PostMapping("/logout")
     public String logout(HttpSession session) {
+        session.invalidate();
+        return "redirect:/";
+    }
+
+    @GetMapping("/logout")
+    public String logoutGet(HttpSession session) {
         session.invalidate();
         return "redirect:/";
     }

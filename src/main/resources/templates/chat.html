@@ -19,8 +19,16 @@
                 <a href="/herbs">Herbs Encyclopedia</a>
                 <a href="/chat" class="active">AI Chatbot</a>
                 <a href="/about">About</a>
-                <a href="/login">Login</a>
-                <a href="/signup" class="btn btn-small nav-signup">Sign Up</a>
+                <th:block th:if="${session.userId != null}">
+                    <span class="nav-user-badge">👤 <span th:text="${session.userName}">User</span></span>
+                    <form th:action="@{/logout}" method="post" class="nav-logout-form">
+                        <button type="submit" class="btn btn-small nav-logout">Logout</button>
+                    </form>
+                </th:block>
+                <th:block th:unless="${session.userId != null}">
+                    <a href="/login">Login</a>
+                    <a href="/signup" class="btn btn-small nav-signup">Sign Up</a>
+                </th:block>
             </nav>
         </div>
     </header>
@@ -29,28 +37,33 @@
         <div class="container chat-container">
             <div class="chat-header">
                 <h1>🌿 AyurvedaCare AI Assistant</h1>
-                <p>Ask about Ayurveda, herbs, natural wellness, Doshas, diet & lifestyle. Your AI response can be emailed to your registered address or another address you choose.</p>
-                <div class="signed-in">Signed in as <strong th:text="${userName}">User</strong> · <span th:text="${userEmail}">email@example.com</span> <form method="post" action="/logout" style="display:inline"><button class="link-button" type="submit">Logout</button></form></div>
+                <p>Ask about Ayurveda, herbs, natural wellness, Doshas, diet & lifestyle. Your chat history is saved to your account.</p>
+                <div class="signed-in">Signed in as <strong th:text="${userName}">User</strong> · <span th:text="${userEmail}">email@example.com</span></div>
             </div>
 
-            <div class="language-selector">
-                <label for="language">Preferred Language:</label>
-                <select id="language">
-                    <option value="English">English</option>
-                    <option value="Hindi">Hindi (हिन्दी)</option>
-                    <option value="Sanskrit terms with English">Sanskrit + English</option>
-                    <option value="Tamil">Tamil</option>
-                    <option value="Telugu">Telugu</option>
-                    <option value="Marathi">Marathi</option>
-                    <option value="Bengali">Bengali</option>
-                    <option value="Gujarati">Gujarati</option>
-                    <option value="Kannada">Kannada</option>
-                    <option value="Malayalam">Malayalam</option>
-                </select>
+            <div class="chat-toolbar">
+                <div class="language-selector">
+                    <label for="language">Preferred Language:</label>
+                    <select id="language">
+                        <option value="English">English</option>
+                        <option value="Hindi">Hindi (हिन्दी)</option>
+                        <option value="Sanskrit terms with English">Sanskrit + English</option>
+                        <option value="Tamil">Tamil</option>
+                        <option value="Telugu">Telugu</option>
+                        <option value="Marathi">Marathi</option>
+                        <option value="Bengali">Bengali</option>
+                        <option value="Gujarati">Gujarati</option>
+                        <option value="Kannada">Kannada</option>
+                        <option value="Malayalam">Malayalam</option>
+                    </select>
+                </div>
+                <button id="clear-history-btn" class="clear-history-btn" type="button" title="Clear chat history">
+                    <span>🗑️</span> Clear History
+                </button>
             </div>
 
             <div id="chat-messages" class="chat-messages">
-                <div class="message bot">
+                <div class="message bot welcome-message" id="welcome-message">
                     <div class="message-content">
                         Namaste! 🙏 I am AyurvedaCare, your Ayurvedic wellness companion.<br><br>
                         I can help you with:<br>

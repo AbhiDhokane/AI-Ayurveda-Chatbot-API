@@ -7,7 +7,8 @@ AyurvedaCare AI is a full-stack Java 17 + Spring Boot web application that combi
 ## ✨ Features
 
 - 🔐 **User Authentication:** Signup, login and logout with BCrypt password hashing.
-- 👤 **Persistent Data:** Users and sessions stored in H2 database.
+- 👤 **Persistent Data:** Users, sessions, and chat conversation history stored in H2 database.
+- 💬 **Persistent Chat History:** Seamlessly preserves conversation history for each logged-in user with clear history control.
 - 🤖 **Cloud AI Chatbot:** Powered by Google Gemini (Free Tier) & xAI Grok API with real-time SSE streaming.
 - 🌿 **Ayurvedic Herb Encyclopedia:** Curated botanical encyclopedia loaded from `herbs.json`.
 - 🔎 **Herb Search & Categories:** Filter herbs by category, health benefits, and search terms.
