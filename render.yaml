@@ -6,6 +6,7 @@ services:
     region: oregon
     dockerfilePath: ./Dockerfile
     autoDeploy: true
+    healthCheckPath: /
     envVars:
       - key: PORT
         value: 8081
@@ -26,4 +27,8 @@ services:
       - key: MAIL_USERNAME
         sync: false
       - key: MAIL_PASSWORD
+        sync: false
+      - key: BREVO_API_KEY
+        sync: false
+      - key: RESEND_API_KEY
         sync: false
